@@ -8,11 +8,11 @@ export class User {
 
 
     getId(){
-
+        return this.id;
     }
 
     getName(){
-        return this.name
+        return this.name;
     }
 
     getEmail(){
