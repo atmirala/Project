@@ -25,7 +25,64 @@ export class MovieDatabase extends BaseDatabase {
         }
     }
 
-    public async getMovieByTitle(title: string): Promise<any> {
+    public async getAvailableMovies(): Promise<any> {
+
+        try {
+          const movies = await this.getConnection()
+            .select("*")
+            .from(MovieDatabase.TABLE_NAME)
+            .where({ available: true })
+    
+          const mappedMovies = movies.map((movie: any) => ({
+            id: movie.id,
+            title: movie.title,
+            director: movie.director,
+            available: movie.available
+          }))
+    
+          return mappedMovies
+        } catch (error) {
+          throw new Error(error.sqlMessage || error.message);
+        }
+      }
+    
+      public async rentMovie(id: string): Promise<void> {
+    
+        try {
+          await this.getConnection()
+            .update({ available: false })
+            .where({ id })
+            .from(MovieDatabase.TABLE_NAME)
+    
+        } catch (error) {
+          throw new Error(error.sqlMessage || error.message);
+        }
+      }
+    
+      public async returnMovie(id: string): Promise<void> {
+    
+        try {
+          await this.getConnection()
+            .where({ id })
+            .update({ available: true })
+            .from(MovieDatabase.TABLE_NAME)
+    
+        } catch (error) {
+          throw new Error(error.sqlMessage || error.message);
+        }
+      }
+    
+      public async checkAvailability(id: string): Promise<any> {
+    
+        try {
+          const available = await this.getConnection()
+            .where({ id })
+            .select("available")
+            .from(MovieDatabase.TABLE_NAME)
+          return available[0].available
+        } catch (error) {
+          throw new Error(error.sqlMessage || error.message);
+        }
         
     }
 
